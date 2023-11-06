@@ -3,7 +3,6 @@
 use super::Instruction;
 use crate::helper::safe_add;
 use std::{
-    collections::VecDeque,
     error::Error,
     fmt::{self, Display},
 };
@@ -13,7 +12,6 @@ pub enum EvalError {
     PCOverFlow,
     SPOverFlow,
     InvalidPC,
-    InvalidContext,
 }
 
 impl Display for EvalError {
@@ -57,6 +55,10 @@ fn eval_depth(
                 } else {
                     return Ok(false);
                 }
+            }
+            Instruction::AnyChar => {
+                safe_add(&mut pc, &1, || EvalError::PCOverFlow)?;
+                safe_add(&mut sp, &1, || EvalError::SPOverFlow)?;
             }
             Instruction::Jump(addr) => {
                 pc = *addr;

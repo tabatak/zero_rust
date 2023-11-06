@@ -70,6 +70,10 @@ impl Generator {
             }
             AST::Question(e) => self.gen_question(e)?,
             AST::Seq(v) => self.gen_seq(v)?,
+            AST::Dot => {
+                self.insts.push(Instruction::AnyChar);
+                self.inc_pc()?;
+            }
         }
 
         Ok(())
