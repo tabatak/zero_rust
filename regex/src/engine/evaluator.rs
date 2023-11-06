@@ -25,8 +25,12 @@ impl Error for EvalError {}
 /// 命令列の評価を行う関数
 ///
 /// instが命令列となり、その命令列を用いて入力文字列lineにマッチさせる
-pub fn eval(inst: &[Instruction], line: &[char]) -> Result<bool, EvalError> {
-    eval_depth(inst, line, 0, 0)
+pub fn eval(
+    inst: &[Instruction],
+    line: &[char],
+    include_head_of_line: bool,
+) -> Result<bool, EvalError> {
+    eval_depth(inst, line, 0, 0, include_head_of_line)
 }
 
 /// 深さ優先探索で再起的にマッチングを行う評価関数
@@ -35,6 +39,7 @@ fn eval_depth(
     line: &[char],
     mut pc: usize,
     mut sp: usize,
+    include_head_of_line: bool,
 ) -> Result<bool, EvalError> {
     loop {
         let next = if let Some(i) = inst.get(pc) {
@@ -60,11 +65,19 @@ fn eval_depth(
                 safe_add(&mut pc, &1, || EvalError::PCOverFlow)?;
                 safe_add(&mut sp, &1, || EvalError::SPOverFlow)?;
             }
+            Instruction::HeadOfLine => {
+                if !include_head_of_line || sp != 0 {
+                    return Ok(false);
+                }
+                safe_add(&mut pc, &1, || EvalError::PCOverFlow)?;
+            }
             Instruction::Jump(addr) => {
                 pc = *addr;
             }
             Instruction::Split(addr1, addr2) => {
-                if eval_depth(inst, line, *addr1, sp)? || eval_depth(inst, line, *addr2, sp)? {
+                if eval_depth(inst, line, *addr1, sp, include_head_of_line)?
+                    || eval_depth(inst, line, *addr2, sp, include_head_of_line)?
+                {
                     return Ok(true);
                 } else {
                     return Ok(false);

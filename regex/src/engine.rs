@@ -16,6 +16,7 @@ pub enum Instruction {
     Jump(usize),
     Split(usize, usize),
     AnyChar,
+    HeadOfLine,
 }
 
 impl Display for Instruction {
@@ -26,6 +27,7 @@ impl Display for Instruction {
             Instruction::Jump(addr) => write!(f, "jump {:>04}", addr),
             Instruction::Split(addr1, addr2) => write!(f, "split {:>04}, {:>04}", addr1, addr2),
             Instruction::AnyChar => write!(f, "anychar"),
+            Instruction::HeadOfLine => write!(f, "headofline"),
         }
     }
 }
@@ -74,9 +76,9 @@ pub fn print(expr: &str) -> Result<(), DynError> {
 /// エラーなく実行でき、かつマッチングに**失敗**した場合はOk(false)を返す。
 ///
 /// 入力された正規表現にエラーがあったり、内部的な実装エラーがある場合はErrを返す。
-pub fn do_matching(expr: &str, line: &str) -> Result<bool, DynError> {
+pub fn do_matching(expr: &str, line: &str, include_head_of_line: bool) -> Result<bool, DynError> {
     let ast = parser::parse(expr)?;
     let code = codegen::gen_code(&ast)?;
     let line = line.chars().collect::<Vec<_>>();
-    Ok(evaluator::eval(&code, &line)?)
+    Ok(evaluator::eval(&code, &line, include_head_of_line)?)
 }

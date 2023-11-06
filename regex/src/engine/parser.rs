@@ -50,6 +50,7 @@ pub enum AST {
     Or(Box<AST>, Box<AST>),
     Seq(Vec<AST>),
     Dot,
+    Hat,
 }
 
 /// parse_plus_star_question関数で利用するための列挙型
@@ -77,6 +78,7 @@ pub fn parse(expr: &str) -> Result<AST, ParseError> {
     for (i, c) in expr.chars().enumerate() {
         match &state {
             ParseState::Char => match c {
+                '^' => seq.push(AST::Hat),
                 '.' => seq.push(AST::Dot),
                 '+' => parse_plus_star_question(&mut seq, PSQ::Plus, i)?,
                 '*' => parse_plus_star_question(&mut seq, PSQ::Star, i)?,
@@ -173,7 +175,7 @@ fn parse_plus_star_question(
 /// 特殊文字のエスケープ
 fn parse_escape(pos: usize, c: char) -> Result<AST, ParseError> {
     match c {
-        '\\' | '(' | ')' | '|' | '+' | '*' | '?' | '.' => Ok(AST::Char(c)),
+        '\\' | '(' | ')' | '|' | '+' | '*' | '?' | '.' | '^' => Ok(AST::Char(c)),
         _ => {
             let err = ParseError::InvalidEscape(pos, c);
             Err(err)

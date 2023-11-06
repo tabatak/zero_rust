@@ -74,6 +74,10 @@ impl Generator {
                 self.insts.push(Instruction::AnyChar);
                 self.inc_pc()?;
             }
+            AST::Hat => {
+                self.insts.push(Instruction::HeadOfLine);
+                self.inc_pc()?;
+            }
         }
 
         Ok(())

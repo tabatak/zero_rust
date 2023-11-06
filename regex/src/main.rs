@@ -42,7 +42,7 @@ fn match_file(expr: &str, file: &str) -> Result<(), DynError> {
     for line in reader.lines() {
         let line = line?;
         for (i, _) in line.char_indices() {
-            if engine::do_matching(expr, &line[i..])? {
+            if engine::do_matching(expr, &line[i..], i == 0)? {
                 println!("{line}");
                 break;
             }
