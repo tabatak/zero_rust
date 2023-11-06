@@ -17,6 +17,7 @@ pub enum Instruction {
     Split(usize, usize),
     AnyChar,
     HeadOfLine,
+    EndOfLine,
 }
 
 impl Display for Instruction {
@@ -28,6 +29,7 @@ impl Display for Instruction {
             Instruction::Split(addr1, addr2) => write!(f, "split {:>04}, {:>04}", addr1, addr2),
             Instruction::AnyChar => write!(f, "anychar"),
             Instruction::HeadOfLine => write!(f, "headofline"),
+            Instruction::EndOfLine => write!(f, "endofline"),
         }
     }
 }

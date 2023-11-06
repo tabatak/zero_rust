@@ -71,6 +71,12 @@ fn eval_depth(
                 }
                 safe_add(&mut pc, &1, || EvalError::PCOverFlow)?;
             }
+            Instruction::EndOfLine => {
+                if sp != line.len() {
+                    return Ok(false);
+                }
+                safe_add(&mut pc, &1, || EvalError::PCOverFlow)?;
+            }
             Instruction::Jump(addr) => {
                 pc = *addr;
             }

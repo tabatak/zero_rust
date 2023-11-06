@@ -78,6 +78,10 @@ impl Generator {
                 self.insts.push(Instruction::HeadOfLine);
                 self.inc_pc()?;
             }
+            AST::Dollar => {
+                self.insts.push(Instruction::EndOfLine);
+                self.inc_pc()?;
+            }
         }
 
         Ok(())
